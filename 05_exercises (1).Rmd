@@ -124,7 +124,10 @@ ggplotly(covid_19_mw_graph)
   2. Use animation to tell an interesting story with the `small_trains` dataset that contains data from the SNCF (National Society of French Railways). These are Tidy Tuesday data! Read more about it [here](https://github.com/rfordatascience/tidytuesday/tree/master/data/2019/2019-02-26).
 
 ```{r}
-
+small_trains %>%
+  ggplot(aes(x = month)) +
+  geom_bar()
+  
 ```
 
 ## Garden data
