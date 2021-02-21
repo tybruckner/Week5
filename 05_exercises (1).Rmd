@@ -119,14 +119,24 @@ covid_19_mw_graph <- covid_19_mw %>%
 
 ggplotly(covid_19_mw_graph)
 ```
+```{r}
+length(unique(small_trains$departure_station))
+```
   
   
   2. Use animation to tell an interesting story with the `small_trains` dataset that contains data from the SNCF (National Society of French Railways). These are Tidy Tuesday data! Read more about it [here](https://github.com/rfordatascience/tidytuesday/tree/master/data/2019/2019-02-26).
 
 ```{r}
 small_trains %>%
-  ggplot(aes(x = month)) +
-  geom_bar()
+  filter(departure_station %in% c("PARIS EST", "PARIS LYON","PARIS MONTPARNASSE", "PARIS NORD","PARIS VAUGIRARD"))%>%
+  mutate(month = factor(month.abb[month], levels = month.abb)) %>%
+  ggplot(aes(x = month, y = delayed_number, group = departure_station)) +
+  geom_col() +
+  transition_states(departure_station) +
+  labs(title = "Proportion of Late Train Departures Monthly in Paris",
+       subtitle = "Departure Station: {closest_state}",
+       x = "",
+       y = "")
   
 ```
 
