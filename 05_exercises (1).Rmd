@@ -56,6 +56,8 @@ panama_run <- read_csv("https://raw.githubusercontent.com/llendway/gps-data/mast
 #COVID-19 data from the New York Times
 covid19 <- read_csv("https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv")
 
+hbcu_all <- read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-02-02/hbcu_all.csv') %>% 
+  clean_names()
 ```
 
 ## Put your homework on GitHub!
@@ -81,6 +83,43 @@ Once your repository is created, you should always open your **project** rather 
 ## Warm-up exercises from tutorial
 
   1. Choose 2 graphs you have created for ANY assignment in this class and add interactivity using the `ggplotly()` function.
+  
+```{r}
+beet_harvest <- garden_harvest %>%
+  select(vegetable,date,weight,variety)%>%
+  mutate(wt_lbs = weight*0.00220462)%>%
+  filter(vegetable == "beets")%>%
+  group_by(variety, date) %>%
+  summarise(daily_wt_lbs = sum(wt_lbs))%>%
+  mutate(cum_weight_lbs = cumsum(daily_wt_lbs)) %>%
+  ggplot(aes(x=date, y= cum_weight_lbs, color = variety))+
+  geom_line()+
+  scale_color_manual(values = c('Gourmet Golden' = "brown", 'Sweet Merlin' = "red", 'leaves' = "black"))+
+  labs(title = "2020 Beets Harvest in Pounds",x ="", y = "")
+
+ggplotly(beet_harvest)
+
+```
+  
+  
+```{r}
+covid_19_mw <- covid19 %>%
+  select(state, date, cases)%>%
+  filter(state %in% c("Minnesota",
+                      "Wisconsin",
+                      "Iowa",
+                      "South Dakota"))%>%
+  group_by(date,state)%>%
+  summarize(total_cases = cumsum(cases))
+
+covid_19_mw_graph <- covid_19_mw %>%
+  ggplot(aes(x = date, y = total_cases, color = state))+
+  geom_line()+
+  labs(title = "Cummulative Case Count by State")
+
+ggplotly(covid_19_mw_graph)
+```
+  
   
   2. Use animation to tell an interesting story with the `small_trains` dataset that contains data from the SNCF (National Society of French Railways). These are Tidy Tuesday data! Read more about it [here](https://github.com/rfordatascience/tidytuesday/tree/master/data/2019/2019-02-26).
 
