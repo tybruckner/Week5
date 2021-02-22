@@ -200,6 +200,7 @@ mallorca_map <- get_stamenmap(
 ggmap(mallorca_map)+
   geom_path(data = mallorca_bike_day7,
              aes(x = lon, y = lat, color = ele), size = .1)+
+  geom_point(data = mallorca_bike_day7, aes(x= lon, y= lat), color = "red")+
   labs(title = "Mallorca Bike Path",
        subtitle = "Time:{frame_along}", 
        x = "Longitude",
