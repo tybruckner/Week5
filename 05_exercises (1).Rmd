@@ -126,18 +126,23 @@ length(unique(small_trains$departure_station))
   
   2. Use animation to tell an interesting story with the `small_trains` dataset that contains data from the SNCF (National Society of French Railways). These are Tidy Tuesday data! Read more about it [here](https://github.com/rfordatascience/tidytuesday/tree/master/data/2019/2019-02-26).
 
-```{r}
+```{r,eval=FALSE}
 small_trains %>%
-  filter(departure_station %in% c("PARIS EST", "PARIS LYON","PARIS MONTPARNASSE", "PARIS NORD","PARIS VAUGIRARD"))%>%
+  filter(departure_station %in% c("PARIS EST", "PARIS LYON","PARIS MONTPARNASSE", "PARIS NORD", "PARIS VAUGIRARD"))%>%
+  filter(year == "2018")%>%
   mutate(month = factor(month.abb[month], levels = month.abb)) %>%
-  ggplot(aes(x = month, y = delayed_number, group = departure_station)) +
+  ggplot(aes(x = month, y = total_num_trips, group = departure_station)) +
   geom_col() +
   transition_states(departure_station) +
-  labs(title = "Proportion of Late Train Departures Monthly in Paris",
+  labs(title = "2018 Train Departures by Month in Paris",
        subtitle = "Departure Station: {closest_state}",
        x = "",
        y = "")
-  
+  anim_save("trains_Paris.gif")
+```
+
+```{r, echo=FALSE}
+knitr::include_graphics("trains_Paris.gif")
 ```
 
 ## Garden data
