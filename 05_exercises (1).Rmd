@@ -293,7 +293,9 @@ knitr::include_graphics("covid_19.gif")
   
   <br />
   
-  Overall the graph is messy and hard to read. The feature I really like is that the state name with the most new cases will rise to the top when they are a COVID hotspot. Slowing down the gif also makes it more readable.
+  Overall the graph is messy hard to read. The feature I really like is that the state name with the most new cases will rise to the top when they were a COVID hotspot. Slowing down the gif also makes it more readable. We also do not account for population density in this graph. Early in the pandemic states with high density rose to the top.
+  
+  
   7. In this exercise you will animate a map of the US, showing how cumulative COVID-19 cases per 10,000 residents has changed over time. This is similar to exercises 11 & 12 from the previous exercises, with the added animation! So, in the end, you should have something like the static map you made there, but animated over all the days. The code below gives the population estimates for each state and loads the `states_map` data. Here is a list of details you should include in the plot:
   
   * Put date in the subtitle.   
@@ -303,15 +305,45 @@ knitr::include_graphics("covid_19.gif")
   * Comment on what you see.  
 
 
-```{r}
+```{r, eval=FALSE}
 census_pop_est_2018 <- read_csv("https://www.dropbox.com/s/6txwv3b4ng7pepe/us_census_2018_state_pop_est.csv?dl=1") %>% 
   separate(state, into = c("dot","state"), extra = "merge") %>% 
   select(-dot) %>% 
   mutate(state = str_to_lower(state))
 
 states_map <- map_data("state")
+
+us_map_covid_anim <- covid19 %>%
+  mutate(state = str_to_lower(state)) %>%
+left_join(census_pop_est_2018,
+            by = c("state" = "state")) %>% 
+  mutate(covid_per_10000 = (cases/est_pop_2018)*10000,
+         weekday = wday(date, label = TRUE)) %>%
+  filter(weekday == "Fri") %>%
+  ggplot() +
+  geom_map(map = states_map,
+           aes(map_id = state,
+               fill = covid_per_10000,
+               group = date)) +
+  expand_limits(x = states_map$long, y = states_map$lat) +
+  labs(title = "Cumulative Coronavirus Cases per 10000 People",
+       subtitle = "Time: {closest_state}",
+       fill = " Number of Cases per 10000 People") +
+  theme_map() +
+  transition_states(date)
+ 
+  animate(us_map_covid_anim, nframes = 200, duration = 40, end_pause = 10)
+```
+```{r}
+anim_save("us_map_covid.gif")
 ```
 
+```{r, echo=FALSE}
+knitr::include_graphics("us_map_covid.gif")
+```
+
+
+It is very interesting that cases per 10000 has generally evened out by our current time. Initially the coasts had the first cases. I really like this map and find it informative. I also think that testing capacity was a major difference in the amount of cases in different states at the beginning of the pandemic.
 ## Your first `shiny` app (for next week!)
 
 NOT DUE THIS WEEK! If any of you want to work ahead, this will be on next week's exercises.
